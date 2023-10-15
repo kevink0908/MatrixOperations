@@ -19,6 +19,7 @@ public class Matrix {
         // then, present a menu that allows the user to
         // select the operation they want to test.
         do {
+            System.out.println("\nPlease select from the following options:");
             System.out.println("(1) Add the matrices.");
             System.out.println("(2) Subtract the matrices.");
             System.out.println("(3) Multiply the matrices.");
@@ -37,8 +38,7 @@ public class Matrix {
                         break;
                     }
                     // perform addition on two matrices and print out the result.
-                    addition(null, null);
-                    printMatrices();
+                    printMatrices(addition(matrix1, matrix2));
                     break;
                 case 2:
                     // check to see if subtraction is permissible on the two matrices.
@@ -48,8 +48,7 @@ public class Matrix {
                         break;
                     }
                     // perform subtraction on two matrices and print out the result.
-                    subtraction(null, null);
-                    printMatrices();
+                    printMatrices(subtraction(matrix1, matrix2));
                     break;
                 case 3:
                     // check to see if multiplication is permissible on the two matrices.
@@ -59,8 +58,7 @@ public class Matrix {
                         break;
                     }
                     // perform multiplication on two matrices and print out the result.
-                    multiplication(null, null, userInput);
-                    printMatrices();
+                    printMatrices(multiplication(matrix1, matrix2));
                     break;
                 case 4:
                     // provide the user an option to select two new matrices.
@@ -85,12 +83,12 @@ public class Matrix {
         int size1, size2;
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Please enter the size for an n x n matrix #1: ");
+        System.out.print("\nPlease enter the size for an n x n matrix #1: ");
         size1 = scanner.nextInt();
         // clear the buffer.
         scanner.nextLine();
 
-        System.out.println("Please enter the size for an n x n matrix #2: ");
+        System.out.print("Please enter the size for an n x n matrix #2: ");
         size2 = scanner.nextInt();
         // clear the buffer.
         scanner.nextLine();
@@ -101,8 +99,8 @@ public class Matrix {
         matrix2 = new float[size2][size2];
 
         for (int i = 0; i < matrix1.length; i++) {
-            for (int j = 0; i < matrix1[0].length; j++) {
-                System.out.println("Please enter a floating point value for Matrix #1's Row #" + (i + 1)
+            for (int j = 0; j < matrix1[0].length; j++) {
+                System.out.print("Please enter a floating point value for Matrix #1's Row #" + (i + 1)
                         + " and Column #" + (j + 1) + ": ");
                 temp = scanner.nextFloat();
                 // clear the buffer.
@@ -116,8 +114,8 @@ public class Matrix {
         }
 
         for (int i = 0; i < matrix2.length; i++) {
-            for (int j = 0; i < matrix2[0].length; j++) {
-                System.out.println("Please enter a floating point value for Matrix #2's Row #" + (i + 1)
+            for (int j = 0; j < matrix2[0].length; j++) {
+                System.out.print("Please enter a floating point value for Matrix #2's Row #" + (i + 1)
                         + " and Column #" + (j + 1) + ": ");
                 temp = scanner.nextFloat();
                 // clear the buffer.
@@ -130,14 +128,11 @@ public class Matrix {
             }
         }
 
-        // close the scanner to avoid resource leak.
-        scanner.close();
-
     }
 
     // this method will print out the result of the operation after it is performed.
     public static void printMatrices(float[][] result) {
-        System.out.println("Printing out the result...\n");
+        System.out.println("\nPrinting out the result...\n");
 
         for (int i = 0; i < result.length; i++) {
             for (int j = 0; j < result[0].length; j++) {
@@ -145,6 +140,7 @@ public class Matrix {
             }
             System.out.println();
         }
+        System.out.println();
 
     }
 
@@ -163,9 +159,9 @@ public class Matrix {
     }
 
     // this function performs matrix addition.
-    protected static int[][] addition(float[][] matrix1, float[][] matrix2) {
+    protected static float[][] addition(float[][] matrix1, float[][] matrix2) {
         int n = matrix1.length;
-        float[][] result = new int[n][n];
+        float[][] result = new float[n][n];
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -179,9 +175,9 @@ public class Matrix {
     }
 
     // this function performs matrix subtraction.
-    protected static int[][] subtraction(float[][] matrix1, float[][] matrix2) {
-        int n = matrix.length;
-        float[][] result = new int[n][n];
+    protected static float[][] subtraction(float[][] matrix1, float[][] matrix2) {
+        int n = matrix1.length;
+        float[][] result = new float[n][n];
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -194,15 +190,15 @@ public class Matrix {
         return result;
     }
 
-    protected static int[][] multiplication(float[][] matrix1, float[][] matrix2) {
+    protected static float[][] multiplication(float[][] matrix1, float[][] matrix2) {
         int n = matrix1.length;
-        float[][] result = new int[n][n];
+        float[][] result = new float[n][n];
 
         // perform matrix multiplication on the two matrices.
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 // first, initialize the new matrix to 0.
-                result[i][j] = 0.0;
+                result[i][j] = 0;
 
                 for (int k = 0; k < n; k++) {
                     // then, start multiplying two matrices before
