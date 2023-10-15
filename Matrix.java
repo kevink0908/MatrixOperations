@@ -32,9 +32,9 @@ public class Matrix {
             switch (userInput) {
                 case 1:
                     // check to see if addition is permissible on the two matrices.
-                    if (!checkPermissibility(matrix1, matrix2)) {
+                    if (!checkAdditionPermissibility(matrix1, matrix2)) {
                         System.out.println(
-                                "Error: addition is not permissible on the two matrices. Please enter two new matrices.");
+                                "Error: addition is not permissible on the current matrices. Please enter two new matrices to perform an addition.");
                         break;
                     }
                     // perform addition on two matrices and print out the result.
@@ -42,9 +42,9 @@ public class Matrix {
                     break;
                 case 2:
                     // check to see if subtraction is permissible on the two matrices.
-                    if (!checkPermissibility(matrix1, matrix2)) {
+                    if (!checkAdditionPermissibility(matrix1, matrix2)) {
                         System.out.println(
-                                "Error: subtraction is not permissible on the two matrices. Please enter two new matrices.");
+                                "Error: subtraction is not permissible on the current matrices. Please enter two new matrices to perform a subtraction.");
                         break;
                     }
                     // perform subtraction on two matrices and print out the result.
@@ -52,9 +52,9 @@ public class Matrix {
                     break;
                 case 3:
                     // check to see if multiplication is permissible on the two matrices.
-                    if (!checkPermissibility(matrix1, matrix2)) {
+                    if (!checkMultiplicationPermissibility(matrix1, matrix2)) {
                         System.out.println(
-                                "Error: multiplication is not permissible on the two matrices. Please enter two new matrices.");
+                                "Error: multiplication is not permissible on the two matrices. Please enter two new matrices to perform a multiplication.");
                         break;
                     }
                     // perform multiplication on two matrices and print out the result.
@@ -80,24 +80,36 @@ public class Matrix {
     // this method allows the user to enter the size and the elements for two
     // matrices.
     protected static void enterMatrices() {
-        int size1, size2;
+        int row, col;
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print("\nPlease enter the size for an n x n matrix #1: ");
-        size1 = scanner.nextInt();
+        System.out.print("\nPlease enter the row size for matrix #1: ");
+        row = scanner.nextInt();
         // clear the buffer.
         scanner.nextLine();
 
-        System.out.print("Please enter the size for an n x n matrix #2: ");
-        size2 = scanner.nextInt();
+        System.out.print("Please enter the column size for matrix #1: ");
+        col = scanner.nextInt();
         // clear the buffer.
         scanner.nextLine();
 
-        // create two n x n matrices.
+        // create the first matrix using the row and the column values.
+        matrix1 = new float[row][col];
+
+        System.out.print("Please enter the row size for matrix #2: ");
+        row = scanner.nextInt();
+        // clear the buffer.
+        scanner.nextLine();
+
+        System.out.print("Please enter the column size for matrix #2: ");
+        col = scanner.nextInt();
+        // clear the buffer.
+        scanner.nextLine();
+
+        // create the first matrix using the row and the column values.
+        matrix2 = new float[row][col];
+
         float temp;
-        matrix1 = new float[size1][size1];
-        matrix2 = new float[size2][size2];
-
         for (int i = 0; i < matrix1.length; i++) {
             for (int j = 0; j < matrix1[0].length; j++) {
                 System.out.print("Please enter a floating point value for Matrix #1's Row #" + (i + 1)
@@ -144,12 +156,27 @@ public class Matrix {
 
     }
 
-    // this method will check whether a certain opereation will be permissible
+    // this method will check whether addition or subtraction will be permissible
     // on the two matrices entered by the user.
-    // NOTE: we will only permit operations on two equal sized matrices for this
-    // project.
-    private static boolean checkPermissibility(float[][] matrix1, float[][] matrix2) {
+    // NOTE: both addition and subtraction are permissible only if the two
+    // matrices have the same dimensions.
+    private static boolean checkAdditionPermissibility(float[][] matrix1, float[][] matrix2) {
         if (matrix1.length != matrix2.length || matrix1[0].length != matrix2[0].length) {
+            return false;
+        }
+
+        // return true if two n x n matrices have the equal size.
+        return true;
+
+    }
+
+    // this method will check whether multiplication will be permissible
+    // on the two matrices entered by the user.
+    // NOTE: matrix multiplication will be permissible only if the number of
+    // columns in the first matrix is equal to the number of rows in the
+    // second matrix.
+    private static boolean checkMultiplicationPermissibility(float[][] matrix1, float[][] matrix2) {
+        if (matrix1[0].length != matrix2.length) {
             return false;
         }
 
@@ -191,16 +218,16 @@ public class Matrix {
     }
 
     protected static float[][] multiplication(float[][] matrix1, float[][] matrix2) {
-        int n = matrix1.length;
-        float[][] result = new float[n][n];
+        int row = matrix1.length, col = matrix2[0].length, row2 = matrix2.length;
+        float[][] result = new float[row][col];
 
         // perform matrix multiplication on the two matrices.
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
                 // first, initialize the new matrix to 0.
                 result[i][j] = 0;
 
-                for (int k = 0; k < n; k++) {
+                for (int k = 0; k < row2; k++) {
                     // then, start multiplying two matrices before
                     // storing the products in the new matrix.
                     result[i][j] += matrix1[i][k] * matrix2[k][j];
