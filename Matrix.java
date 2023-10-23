@@ -15,6 +15,11 @@ public class Matrix {
         Scanner keyboard = new Scanner(System.in);
         // prompt the user to enter two matrices.
         enterMatrices();
+        // display the matrices before performing any operations.
+        System.out.println("Matrix #1: ");
+        printMatrices(matrix1);
+        System.out.println("Matrix #2: ");
+        printMatrices(matrix2);
 
         // then, present a menu that allows the user to
         // select the operation they want to test.
@@ -68,7 +73,7 @@ public class Matrix {
                     System.out.println("Terminating the program... Good bye!");
                     System.exit(0);
                 default:
-                    System.out.println("Please enter a number from 1 to.");
+                    System.out.println("Please enter a number from 1 to 5.");
             }
 
             // NOTE: have the menu in a loop so that the user can test any
@@ -106,7 +111,7 @@ public class Matrix {
         // clear the buffer.
         scanner.nextLine();
 
-        // create the first matrix using the row and the column values.
+        // create the second matrix using the row and the column values.
         matrix2 = new float[row][col];
 
         float temp;
@@ -176,22 +181,24 @@ public class Matrix {
     // columns in the first matrix is equal to the number of rows in the
     // second matrix.
     private static boolean checkMultiplicationPermissibility(float[][] matrix1, float[][] matrix2) {
+        // check to see if the number of columns in the first matrix is equal
+        // to the number of rows in the second matrix.
         if (matrix1[0].length != matrix2.length) {
             return false;
         }
 
-        // return true if two n x n matrices have the equal size.
+        // return true if two matrices have the same dimensions.
         return true;
 
     }
 
     // this function performs matrix addition.
     protected static float[][] addition(float[][] matrix1, float[][] matrix2) {
-        int n = matrix1.length;
-        float[][] result = new float[n][n];
+        int row = matrix1.length, col = matrix1[0].length;
+        float[][] result = new float[row][col];
 
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
                 // add corresponding elements of matrices.
                 result[i][j] = matrix1[i][j] + matrix2[i][j];
             }
@@ -203,11 +210,11 @@ public class Matrix {
 
     // this function performs matrix subtraction.
     protected static float[][] subtraction(float[][] matrix1, float[][] matrix2) {
-        int n = matrix1.length;
-        float[][] result = new float[n][n];
+        int row = matrix1.length, col = matrix1[0].length;
+        float[][] result = new float[row][col];
 
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
                 // Subtracting corresponding elements of matrices
                 result[i][j] = matrix1[i][j] - matrix2[i][j];
             }
