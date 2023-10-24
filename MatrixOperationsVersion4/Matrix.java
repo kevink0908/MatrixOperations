@@ -187,7 +187,7 @@ public class Matrix {
             return false;
         }
 
-        // return true if two matrices have the same dimensions.
+        // return true if multiplication can be performed on the two matrices.
         return true;
 
     }
@@ -224,6 +224,7 @@ public class Matrix {
         return result;
     }
 
+    // this function performs matrix multiplication.
     protected static float[][] multiplication(float[][] matrix1, float[][] matrix2) {
         int row = matrix1.length, col = matrix2[0].length, row2 = matrix2.length;
         float[][] result = new float[row][col];

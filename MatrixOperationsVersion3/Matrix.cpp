@@ -222,7 +222,7 @@ int main()
     cout << "\nPlease enter the row size for matrix #1: ";
     cin >> row;
 
-    cout << "\nPlease enter the column size for matrix #1: ";
+    cout << "Please enter the column size for matrix #1: ";
     cin >> col;
 
     // create the first matrix using the row and the column values.
