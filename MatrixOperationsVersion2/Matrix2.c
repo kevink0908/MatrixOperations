@@ -2,28 +2,26 @@
 // Instructor: Professor Raheja
 // Course: CS 4080-03
 // Date: 22 October 2023
-// Description: This is the C version (version #1) for the Programming Project 1
-//              that uses a regular stack dynamic 2D array for representing matrices.
+// Description: This is the C version (version #2) for the Programming Project 1
+//              that uses a pointer to a pointer.
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
 // function prototypes.
 bool verifyUserInput(int userInput);
-void enterMatrix(float matrix[100][100], int row, int col);
-void printMatrix(float matrix[100][100], int row, int col);
+void enterMatrix(float **matrix, int row, int col);
+void printMatrix(float **matrix, int row, int col);
 bool checkAdditionPermissibility(int row1, int col1, int row2, int col2);
 bool checkMultiplicationPermissibility(int col1, int row2);
-void addition(float matrix1[100][100], float matrix2[100][100], float result[100][100], int row, int col);
-void subtraction(float matrix1[100][100], float matrix2[100][100], float result[100][100], int row, int col);
-void multiplication(float matrix1[100][100], float matrix2[100][100], float result[100][100], int row1, int col2, int row2);
+float **addition(float **matrix1, float **matrix2, int row, int col);
+float **subtraction(float **matrix1, float **matrix2, int row, int col);
+float **multiplication(float **matrix1, float **matrix2, int row1, int col2, int row2);
 
 int main()
 {
     int userInput, row1, col1, row2, col2;
-    float matrix1[100][100];
-    float matrix2[100][100];
-    float result[100][100];
+    float **matrix1, **matrix2, **result;
 
     printf("\nPlease enter the row size for matrix #1: ");
     scanf("%d", &row1);
@@ -71,6 +69,7 @@ int main()
 
     // create the second matrix using the row and the column values.
     printf("\nInitializing Matrix #2...\n");
+    printf("%d %d %d %d", row1, col1, row2, col2);
     enterMatrix(matrix2, row2, col2);
 
     // then, present a menu that allows the user to
@@ -97,7 +96,7 @@ int main()
                 break;
             }
             // perform addition on two matrices and print out the result.
-            addition(matrix1, matrix2, result, row1, col1);
+            result = addition(matrix1, matrix2, row1, col1);
             printMatrix(result, row1, col1);
         }
         break;
@@ -111,12 +110,13 @@ int main()
                 break;
             }
             // perform subtraction on two matrices and print out the result.
-            subtraction(matrix1, matrix2, result, row1, col1);
+            result = subtraction(matrix1, matrix2, row1, col1);
             printMatrix(result, row1, col1);
         }
         break;
         case 3:
         {
+            printf("%d %d %d %d", row1, col1, row2, col2);
             // check to see if multiplication is permissible on the two matrices.
             if (!checkMultiplicationPermissibility(col1, row2))
             {
@@ -125,7 +125,7 @@ int main()
                 break;
             }
             // perform multiplication on two matrices and print out the result.
-            multiplication(matrix1, matrix2, result, row1, col2, row2);
+            result = multiplication(matrix1, matrix2, row1, col2, row2);
             printMatrix(result, row1, col2);
         }
         break;
@@ -215,11 +215,15 @@ bool verifyUserInput(int userInput)
 }
 
 // this method allows the user to enter the size and the elements for a matrix.
-void enterMatrix(float matrix[100][100], int row, int col)
+void enterMatrix(float **matrix, int row, int col)
 {
+    matrix = (float **)malloc(row * sizeof(float *));
+
     float temp;
     for (int i = 0; i < row; i++)
     {
+        *(matrix + i) = (float *)malloc(col * sizeof(float));
+
         for (int j = 0; j < col; j++)
         {
             printf("Please enter a floating point value for Row #%d and Column #%d:\n", (i + 1), (j + 1));
@@ -228,6 +232,7 @@ void enterMatrix(float matrix[100][100], int row, int col)
             // verify that the input value is a floating point value.
             if (temp == (float)temp)
             {
+                printf("%f", temp);
                 matrix[i][j] = temp;
             }
         }
@@ -235,7 +240,7 @@ void enterMatrix(float matrix[100][100], int row, int col)
 }
 
 // this function will print out the result of the operation after it is performed.
-void printMatrix(float matrix[100][100], int row, int col)
+void printMatrix(float **matrix, int row, int col)
 {
     printf("\nPrinting out the result...\n");
     for (int i = 0; i < row; i++)
@@ -280,10 +285,14 @@ bool checkMultiplicationPermissibility(int col1, int row2)
 }
 
 // this function performs matrix addition.
-void addition(float matrix1[100][100], float matrix2[100][100], float result[100][100], int row, int col)
+float **addition(float **matrix1, float **matrix2, int row, int col)
 {
+    float **result = (float **)malloc(row * sizeof(float *));
+
     for (int i = 0; i < row; i++)
     {
+        *(result + i) = (float *)malloc(col * sizeof(float));
+
         for (int j = 0; j < col; j++)
         {
             result[i][j] = matrix1[i][j] + matrix2[i][j];
@@ -292,10 +301,14 @@ void addition(float matrix1[100][100], float matrix2[100][100], float result[100
 }
 
 // this function performs matrix subtraction.
-void subtraction(float matrix1[100][100], float matrix2[100][100], float result[100][100], int row, int col)
+float **subtraction(float **matrix1, float **matrix2, int row, int col)
 {
+    float **result = (float **)malloc(row * sizeof(float *));
+
     for (int i = 0; i < row; i++)
     {
+        *(result + i) = (float *)malloc(col * sizeof(float));
+
         for (int j = 0; j < col; j++)
         {
             result[i][j] = matrix1[i][j] - matrix2[i][j];
@@ -304,11 +317,15 @@ void subtraction(float matrix1[100][100], float matrix2[100][100], float result[
 }
 
 // this function performs matrix multiplication.
-void multiplication(float matrix1[100][100], float matrix2[100][100], float result[100][100], int row1, int col2, int row2)
+float **multiplication(float **matrix1, float **matrix2, int row1, int col2, int row2)
 {
+    float **result = (float **)malloc(row1 * sizeof(float *));
+
     // perform matrix multiplication on the two matrices.
     for (int i = 0; i < row1; i++)
     {
+        *(result + i) = (float *)malloc(col2 * sizeof(float));
+
         for (int j = 0; j < col2; j++)
         {
             // first, initialize the new matrix to 0.
@@ -322,4 +339,13 @@ void multiplication(float matrix1[100][100], float matrix2[100][100], float resu
             }
         }
     }
+}
+
+void deleteMemory(float **ptr)
+{
+    for (int i = 0; i < getRow(); i++)
+    {
+        delete[] ptr[i];
+    }
+    delete[] matrix;
 }
