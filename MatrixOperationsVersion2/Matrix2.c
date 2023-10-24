@@ -10,13 +10,14 @@
 
 // function prototypes.
 bool verifyUserInput(int userInput);
-void enterMatrix(float **matrix, int row, int col);
+float **enterMatrix(int row, int col);
 void printMatrix(float **matrix, int row, int col);
 bool checkAdditionPermissibility(int row1, int col1, int row2, int col2);
 bool checkMultiplicationPermissibility(int col1, int row2);
 float **addition(float **matrix1, float **matrix2, int row, int col);
 float **subtraction(float **matrix1, float **matrix2, int row, int col);
 float **multiplication(float **matrix1, float **matrix2, int row1, int col2, int row2);
+void deleteMatrix(float **ptr, int row);
 
 int main()
 {
@@ -45,7 +46,7 @@ int main()
 
     // create the first matrix using the row and the column values.
     printf("\nInitializing Matrix #1...\n");
-    enterMatrix(matrix1, row1, col1);
+    matrix1 = enterMatrix(row1, col1);
 
     printf("\nPlease enter the row size for matrix #2: ");
     scanf("%d", &row2);
@@ -69,8 +70,7 @@ int main()
 
     // create the second matrix using the row and the column values.
     printf("\nInitializing Matrix #2...\n");
-    printf("%d %d %d %d", row1, col1, row2, col2);
-    enterMatrix(matrix2, row2, col2);
+    matrix2 = enterMatrix(row2, col2);
 
     // then, present a menu that allows the user to
     // select the operation they want to test.
@@ -131,6 +131,11 @@ int main()
         break;
         case 4:
         {
+            // first, deallocate the memory that was allocated for the
+            // two dynamic arrays.
+            deleteMatrix(matrix1, row1);
+            deleteMatrix(matrix2, row2);
+
             // provide the user an option to select two new matrices.
             printf("\nPlease enter the row size for matrix #1: ");
             scanf("%d", &row1);
@@ -154,8 +159,7 @@ int main()
 
             // create the first matrix using the row and the column values.
             printf("\nInitializing Matrix #1...");
-            float matrix1[row1][col1];
-            enterMatrix(matrix1, row1, col1);
+            matrix1 = enterMatrix(row1, col1);
 
             printf("\nPlease enter the row size for matrix #2: ");
             scanf("%d", &row2);
@@ -179,12 +183,13 @@ int main()
 
             // create the second matrix using the row and the column values.
             printf("\nInitializing Matrix #2...");
-            float matrix2[row2][col2];
-            enterMatrix(matrix2, row2, col2);
+            matrix2 = enterMatrix(row2, col2);
         }
         break;
         case 5:
             printf("Terminating the program... Good bye!\n");
+            deleteMatrix(matrix1, row1);
+            deleteMatrix(matrix2, row2);
             return 0;
         default:
             printf("Please enter a number from 1 to 5.\n");
@@ -215,9 +220,9 @@ bool verifyUserInput(int userInput)
 }
 
 // this method allows the user to enter the size and the elements for a matrix.
-void enterMatrix(float **matrix, int row, int col)
+float **enterMatrix(int row, int col)
 {
-    matrix = (float **)malloc(row * sizeof(float *));
+    float **matrix = (float **)malloc(row * sizeof(float *));
 
     float temp;
     for (int i = 0; i < row; i++)
@@ -232,11 +237,12 @@ void enterMatrix(float **matrix, int row, int col)
             // verify that the input value is a floating point value.
             if (temp == (float)temp)
             {
-                printf("%f", temp);
                 matrix[i][j] = temp;
             }
         }
     }
+
+    return matrix;
 }
 
 // this function will print out the result of the operation after it is performed.
@@ -298,6 +304,8 @@ float **addition(float **matrix1, float **matrix2, int row, int col)
             result[i][j] = matrix1[i][j] + matrix2[i][j];
         }
     }
+
+    return result;
 }
 
 // this function performs matrix subtraction.
@@ -314,6 +322,8 @@ float **subtraction(float **matrix1, float **matrix2, int row, int col)
             result[i][j] = matrix1[i][j] - matrix2[i][j];
         }
     }
+
+    return result;
 }
 
 // this function performs matrix multiplication.
@@ -339,13 +349,15 @@ float **multiplication(float **matrix1, float **matrix2, int row1, int col2, int
             }
         }
     }
+
+    return result;
 }
 
-void deleteMemory(float **ptr)
+void deleteMatrix(float **ptr, int row)
 {
-    for (int i = 0; i < getRow(); i++)
+    for (int i = 0; i < row; i++)
     {
-        delete[] ptr[i];
+        free(ptr[i]);
     }
-    delete[] matrix;
+    free(ptr);
 }
