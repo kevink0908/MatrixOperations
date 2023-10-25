@@ -4,6 +4,7 @@
 // Date: 22 October 2023
 // Description: This is the Java version (version #4) for the Programming Project 1.
 
+import java.util.Random;
 import java.util.Scanner;
 
 public class Matrix {
@@ -11,10 +12,38 @@ public class Matrix {
 
     // this driver program tests three different operations with matrices.
     public static void main(String[] args) {
-        int userInput = 0;
+        int userInput = 0, row, col;
         Scanner keyboard = new Scanner(System.in);
         // prompt the user to enter two matrices.
-        enterMatrices();
+        System.out.print("\nPlease enter the row size for matrix #1: ");
+        row = keyboard.nextInt();
+        // clear the buffer.
+        keyboard.nextLine();
+
+        System.out.print("Please enter the column size for matrix #1: ");
+        col = keyboard.nextInt();
+        // clear the buffer.
+        keyboard.nextLine();
+
+        // create the first matrix using the row and the column values.
+        matrix1 = new float[row][col];
+
+        System.out.print("Please enter the row size for matrix #2: ");
+        row = keyboard.nextInt();
+        // clear the buffer.
+        keyboard.nextLine();
+
+        System.out.print("Please enter the column size for matrix #2: ");
+        col = keyboard.nextInt();
+        // clear the buffer.
+        keyboard.nextLine();
+
+        // create the second matrix using the row and the column values.
+        matrix2 = new float[row][col];
+
+        // enterMatrices(); // take out this comment to allow user input.
+        generateRandomMatrices(row); // take out this comment to disable random matrices.
+
         // display the matrices before performing any operations.
         System.out.println("Matrix #1: ");
         printMatrices(matrix1);
@@ -63,11 +92,42 @@ public class Matrix {
                         break;
                     }
                     // perform multiplication on two matrices and print out the result.
-                    printMatrices(multiplication(matrix1, matrix2));
+                    long start = System.nanoTime();
+                    float[][] result = multiplication(matrix1, matrix2);
+                    System.out.println("\nMatrix Multiplication finished performing in "
+                            + ((double) (System.nanoTime() - start) / 1000000000) + " seconds.");
+                    printMatrices(result);
                     break;
                 case 4:
                     // provide the user an option to select two new matrices.
-                    enterMatrices();
+                    // prompt the user to enter two matrices.
+                    System.out.print("\nPlease enter the row size for matrix #1: ");
+                    row = keyboard.nextInt();
+                    // clear the buffer.
+                    keyboard.nextLine();
+
+                    System.out.print("Please enter the column size for matrix #1: ");
+                    col = keyboard.nextInt();
+                    // clear the buffer.
+                    keyboard.nextLine();
+
+                    // create the first matrix using the row and the column values.
+                    matrix1 = new float[row][col];
+
+                    System.out.print("Please enter the row size for matrix #2: ");
+                    row = keyboard.nextInt();
+                    // clear the buffer.
+                    keyboard.nextLine();
+
+                    System.out.print("Please enter the column size for matrix #2: ");
+                    col = keyboard.nextInt();
+                    // clear the buffer.
+                    keyboard.nextLine();
+
+                    // create the second matrix using the row and the column values.
+                    matrix2 = new float[row][col];
+                    // enterMatrices(); // take out this comment to allow user input.
+                    generateRandomMatrices(row); // take out this comment to disable random
                     break;
                 case 5:
                     System.out.println("Terminating the program... Good bye!");
@@ -85,34 +145,7 @@ public class Matrix {
     // this method allows the user to enter the size and the elements for two
     // matrices.
     protected static void enterMatrices() {
-        int row, col;
         Scanner scanner = new Scanner(System.in);
-
-        System.out.print("\nPlease enter the row size for matrix #1: ");
-        row = scanner.nextInt();
-        // clear the buffer.
-        scanner.nextLine();
-
-        System.out.print("Please enter the column size for matrix #1: ");
-        col = scanner.nextInt();
-        // clear the buffer.
-        scanner.nextLine();
-
-        // create the first matrix using the row and the column values.
-        matrix1 = new float[row][col];
-
-        System.out.print("Please enter the row size for matrix #2: ");
-        row = scanner.nextInt();
-        // clear the buffer.
-        scanner.nextLine();
-
-        System.out.print("Please enter the column size for matrix #2: ");
-        col = scanner.nextInt();
-        // clear the buffer.
-        scanner.nextLine();
-
-        // create the second matrix using the row and the column values.
-        matrix2 = new float[row][col];
 
         float temp;
         for (int i = 0; i < matrix1.length; i++) {
@@ -147,10 +180,24 @@ public class Matrix {
 
     }
 
+    public static void generateRandomMatrices(int n) {
+        matrix1 = new float[n][n];
+        matrix2 = new float[n][n];
+        Random rand = new Random();
+
+        // fill up the matrix with random values.
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                matrix1[i][j] = (float) rand.nextInt(10);
+                matrix2[i][j] = (float) rand.nextInt(10);
+            }
+        }
+
+        return;
+    }
+
     // this method will print out the result of the operation after it is performed.
     public static void printMatrices(float[][] result) {
-        System.out.println("\nPrinting out the result...\n");
-
         for (int i = 0; i < result.length; i++) {
             for (int j = 0; j < result[0].length; j++) {
                 System.out.print(result[i][j] + " ");

@@ -23,7 +23,7 @@ public:
     {
         setRow(0);
         setCol(0);
-        setMatrix();
+        matrix = nullptr;
     } // end of default CTOR.
 
     // this is the parameterized constructor.
@@ -45,15 +45,13 @@ public:
 
         setRow(0);
         setCol(0);
-        setMatrix();
+        matrix = nullptr;
     } // end of DTOR.
 
     // this is the overloaded opeartor function for addition.
     Matrix operator+(Matrix const &obj)
     {
-        Matrix result = Matrix();
-        result.setRow(this->getRow());
-        result.setCol(this->getCol());
+        Matrix result = Matrix(this->getRow(), this->getCol());
 
         // allocate memory in the heap to store results.
         result.matrix = (float **)malloc(getRow() * sizeof(float *));
@@ -75,9 +73,7 @@ public:
     // this is the overloaded opeartor function for subtraction.
     Matrix operator-(Matrix const &obj)
     {
-        Matrix result = Matrix();
-        result.setRow(this->getRow());
-        result.setCol(this->getCol());
+        Matrix result = Matrix(this->getRow(), this->getCol());
 
         // allocate memory in the heap to store results.
         result.matrix = (float **)malloc(getRow() * sizeof(float *));
@@ -99,9 +95,7 @@ public:
     // this is the overloaded opeartor function for multiplication.
     Matrix operator*(Matrix const &obj)
     {
-        Matrix result = Matrix();
-        result.setRow(this->getRow());
-        result.setCol(this->getCol());
+        Matrix result = Matrix(this->getRow(), obj.col);
 
         // allocate memory in the heap to store results.
         result.matrix = (float **)malloc(getRow() * sizeof(float *));
@@ -135,8 +129,7 @@ public:
         {
             for (int j = 0; i < getCol(); j++)
             {
-                cout << *(&getMatrix()[0][0] + (i * getRow() * sizeof(float)) + (j * sizeof(float)))
-                     << " ";
+                cout << getMatrix()[i][j] << " ";
             }
             cout << endl;
         }
@@ -179,10 +172,6 @@ public:
 
     void setRow(int r) { row = r; }
     void setCol(int c) { col = c; }
-    void setMatrix()
-    {
-        matrix = nullptr;
-    }
     void setMatrix(int r, int c)
     {
         float temp;
@@ -203,7 +192,7 @@ public:
                 // verify that the input value is a floating point value.
                 if (temp == (float)temp)
                 {
-                    *(&matrix[0][0] + (i * r * sizeof(float)) + (j * sizeof(float))) = temp;
+                    getMatrix()[i][j] = temp;
                 }
             }
         }
@@ -211,33 +200,51 @@ public:
     int getRow() { return row; }
     int getCol() { return col; }
     float **getMatrix() { return matrix; }
-};
+}; // end of Matrix class.
 
 // this driver program tests three different operations with matrices.
 int main()
 {
     int userInput = 0, row, col;
-    Matrix matrix1, matrix2, result;
+    Matrix result;
 
     cout << "\nPlease enter the row size for matrix #1: ";
     cin >> row;
+    do
+    {
+        if (row % 1 == 0)
+        {
+            break;
+        }
+        cout << "ERROR: Invalid user input... Please enter an integer.\n";
+    } while (row % 1 != 0);
 
     cout << "Please enter the column size for matrix #1: ";
     cin >> col;
+    do
+    {
+        if (col % 1 == 0)
+        {
+            break;
+        }
+        cout << "ERROR: Invalid user input... Please enter an integer.\n";
+    } while (col % 1 != 0);
 
     // create the first matrix using the row and the column values.
     cout << "\nInitializing Matrix #1..." << endl;
-    matrix1 = Matrix(row, col);
+    Matrix matrix1(row, col);
+
+    matrix1.printMatrix();
 
     cout << "\nPlease enter the row size for matrix #2: ";
     cin >> row;
 
-    cout << "\nPlease enter the column size for matrix #2: ";
+    cout << "Please enter the column size for matrix #2: ";
     cin >> col;
 
     // create the second matrix using the row and the column values.
     cout << "\nInitializing Matrix #2..." << endl;
-    matrix2 = Matrix(row, col);
+    Matrix matrix2(row, col);
 
     // display the matrices before performing any operations.
     cout << "\nDisplaying Matrix #1: \n";
