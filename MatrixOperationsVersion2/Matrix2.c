@@ -7,10 +7,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <time.h>
 
 // function prototypes.
-bool verifyUserInput(int userInput);
 float **enterMatrix(int row, int col);
+float **generateRandomMatrix(int n);
 void printMatrix(float **matrix, int row, int col);
 bool checkAdditionPermissibility(int row1, int col1, int row2, int col2);
 bool checkMultiplicationPermissibility(int col1, int row2);
@@ -22,55 +23,31 @@ void deleteMatrix(float **ptr, int row);
 int main()
 {
     int userInput, row1, col1, row2, col2;
+    clock_t timer;
+    double time;
     float **matrix1, **matrix2, **result;
 
     printf("\nPlease enter the row size for matrix #1: ");
     scanf("%d", &row1);
-    do
-    {
-        if (verifyUserInput(row1))
-        {
-            break;
-        }
-    } while (verifyUserInput(row1) == false);
-
     printf("Please enter the column size for matrix #1: ");
     scanf("%d", &col1);
-    do
-    {
-        if (verifyUserInput(col1))
-        {
-            break;
-        }
-    } while (verifyUserInput(col1) == false);
 
     // create the first matrix using the row and the column values.
     printf("\nInitializing Matrix #1...\n");
-    matrix1 = enterMatrix(row1, col1);
+    // matrix1 = enterMatrix(row1, col1); // uncomment this line to allow user input.
+    matrix1 = generateRandomMatrix(row1);
+    printMatrix(matrix1, row1, col1);
 
     printf("\nPlease enter the row size for matrix #2: ");
     scanf("%d", &row2);
-    do
-    {
-        if (verifyUserInput(row2))
-        {
-            break;
-        }
-    } while (verifyUserInput(row2) == false);
-
     printf("Please enter the column size for matrix #2: ");
     scanf("%d", &col2);
-    do
-    {
-        if (verifyUserInput(col2))
-        {
-            break;
-        }
-    } while (verifyUserInput(col2) == false);
 
     // create the second matrix using the row and the column values.
     printf("\nInitializing Matrix #2...\n");
-    matrix2 = enterMatrix(row2, col2);
+    // matrix2 = enterMatrix(row2, col2); // uncomment this line to allow user input.
+    matrix2 = generateRandomMatrix(row2);
+    printMatrix(matrix2, row2, col2);
 
     // then, present a menu that allows the user to
     // select the operation they want to test.
@@ -125,7 +102,11 @@ int main()
                 break;
             }
             // perform multiplication on two matrices and print out the result.
+            timer = clock();
             result = multiplication(matrix1, matrix2, row1, col2, row2);
+            timer = clock() - timer;
+            time = ((double)timer) / CLOCKS_PER_SEC;
+            printf("\nMatrix Multiplication finished performing in %lf seconds.", time);
             printMatrix(result, row1, col2);
         }
         break;
@@ -139,51 +120,25 @@ int main()
             // provide the user an option to select two new matrices.
             printf("\nPlease enter the row size for matrix #1: ");
             scanf("%d", &row1);
-            do
-            {
-                if (verifyUserInput(row1))
-                {
-                    break;
-                }
-            } while (verifyUserInput(row1) == false);
-
-            printf("\nPlease enter the column size for matrix #1: ");
+            printf("Please enter the column size for matrix #1: ");
             scanf("%d", &col1);
-            do
-            {
-                if (verifyUserInput(col1))
-                {
-                    break;
-                }
-            } while (verifyUserInput(col1) == false);
 
             // create the first matrix using the row and the column values.
-            printf("\nInitializing Matrix #1...");
-            matrix1 = enterMatrix(row1, col1);
+            printf("\nInitializing Matrix #1...\n");
+            // matrix1 = enterMatrix(row1, col1); // uncomment this line to allow user input.
+            matrix1 = generateRandomMatrix(row1);
+            printMatrix(matrix1, row1, col1);
 
             printf("\nPlease enter the row size for matrix #2: ");
             scanf("%d", &row2);
-            do
-            {
-                if (verifyUserInput(row2))
-                {
-                    break;
-                }
-            } while (verifyUserInput(row2) == false);
-
-            printf("\nPlease enter the column size for matrix #2: ");
+            printf("Please enter the column size for matrix #2: ");
             scanf("%d", &col2);
-            do
-            {
-                if (verifyUserInput(col2))
-                {
-                    break;
-                }
-            } while (verifyUserInput(col2) == false);
 
             // create the second matrix using the row and the column values.
-            printf("\nInitializing Matrix #2...");
-            matrix2 = enterMatrix(row2, col2);
+            printf("\nInitializing Matrix #2...\n");
+            // matrix2 = enterMatrix(row2, col2); // uncomment this line to allow user input.
+            matrix2 = generateRandomMatrix(row2);
+            printMatrix(matrix2, row2, col2);
         }
         break;
         case 5:
@@ -200,25 +155,6 @@ int main()
     } while (userInput != 5);
 } // end of main.
 
-// this function is used to sanitize user inputs.
-bool verifyUserInput(int userInput)
-{
-    if (userInput % 1 != 0)
-    {
-        printf("ERROR: Invalid user input... Please enter an integer.\n");
-        return false;
-    }
-    else if (userInput < 1 || userInput > 100)
-    {
-        printf("ERROR: Invalid user input... ");
-        printf("Please enter a value less than 100 for the matrix size...\n");
-        return false;
-    }
-
-    // return true if the user input is valid.
-    return true;
-}
-
 // this method allows the user to enter the size and the elements for a matrix.
 float **enterMatrix(int row, int col)
 {
@@ -234,11 +170,30 @@ float **enterMatrix(int row, int col)
             printf("Please enter a floating point value for Row #%d and Column #%d:\n", (i + 1), (j + 1));
             scanf("%f", &temp);
 
-            // verify that the input value is a floating point value.
-            if (temp == (float)temp)
-            {
-                matrix[i][j] = temp;
-            }
+            matrix[i][j] = temp;
+        }
+    }
+
+    return matrix;
+}
+
+// this function generates a random matrix.
+float **generateRandomMatrix(int n)
+{
+    int random;
+    srand(time(0));
+    float **matrix = (float **)malloc(n * sizeof(float *));
+    float temp;
+
+    // fill up the matrix with random values.
+    for (int i = 0; i < n; i++)
+    {
+        *(matrix + i) = (float *)malloc(n * sizeof(float));
+
+        for (int j = 0; j < n; j++)
+        {
+            random = (rand() % 11) + 0;
+            matrix[i][j] = (float)random;
         }
     }
 

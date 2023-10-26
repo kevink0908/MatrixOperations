@@ -4,6 +4,7 @@
 // Date: 22 October 2023
 // Description: This is the C++ version (version #3) for the Programming Project 1.
 #include <iostream>
+#include <time.h>
 using namespace std;
 
 // create a class called matrix.
@@ -171,26 +172,26 @@ void enterMatrix(Matrix &matrix, int row, int col)
 }
 
 // this function generates a random matrix.
-float **generateRandomMatrix(int n)
+void generateRandomMatrix(Matrix &matrix, int n)
 {
     int random;
     srand(time(0));
-    float **matrix = (float **)malloc(n * sizeof(float *));
     float temp;
+    matrix.setRow(n);
+    matrix.setCol(n);
+    matrix.setMatrix(new float *[n]);
 
     // fill up the matrix with random values.
     for (int i = 0; i < n; i++)
     {
-        *(matrix + i) = (float *)malloc(n * sizeof(float));
+        matrix.getMatrix()[i] = new float[n];
 
         for (int j = 0; j < n; j++)
         {
             random = (rand() % 11) + 0;
-            matrix[i][j] = (float)random;
+            matrix.getMatrix()[i][j] = (float)random;
         }
     }
-
-    return matrix;
 }
 
 // this method will print out the result of the operation after it is performed.
@@ -200,7 +201,7 @@ void printMatrix(Matrix &matrix)
     {
         for (int j = 0; j < matrix.getCol(); j++)
         {
-            cout << matrix.getMatrix()[i][j] << " ";
+            printf("%.2f\t", matrix.getMatrix()[i][j]);
         }
         cout << endl;
     }
@@ -246,6 +247,8 @@ int main()
 {
     int userInput = 0, row, col;
     Matrix matrix1, matrix2, result;
+    clock_t timer;
+    double time;
 
     cout << "\nPlease enter the row size for matrix #1: ";
     cin >> row;
@@ -254,17 +257,18 @@ int main()
 
     // create the first matrix using the row and the column values.
     cout << "\nInitializing Matrix #1..." << endl;
-    enterMatrix(matrix1, row, col);
+    // enterMatrix(matrix1, row, col); // uncomment this line to allow user input.
+    generateRandomMatrix(matrix1, row);
 
     cout << "\nPlease enter the row size for matrix #2: ";
     cin >> row;
-
     cout << "Please enter the column size for matrix #2: ";
     cin >> col;
 
     // create the second matrix using the row and the column values.
     cout << "\nInitializing Matrix #2..." << endl;
-    enterMatrix(matrix2, row, col);
+    // enterMatrix(matrix2, row, col); // uncomment this line to allow user input.
+    generateRandomMatrix(matrix2, row);
 
     // display the matrices before performing any operations.
     cout << "\nDisplaying Matrix #1: \n";
@@ -319,7 +323,11 @@ int main()
                 break;
             }
             // perform multiplication on two matrices and print out the result.
+            timer = clock();
             result = matrix1 * matrix2;
+            timer = clock() - timer;
+            time = ((double)timer) / CLOCKS_PER_SEC;
+            cout << "\nMatrix Multiplication finished performing in " << time << " seconds.\n";
             printMatrix(result);
             break;
         case 4:
@@ -331,17 +339,18 @@ int main()
 
             // create the first matrix using the row and the column values.
             cout << "\nInitializing Matrix #1..." << endl;
-            enterMatrix(matrix1, row, col);
+            // enterMatrix(matrix1, row, col); // uncomment this line to allow user input.
+            generateRandomMatrix(matrix1, row);
 
             cout << "\nPlease enter the row size for matrix #2: ";
             cin >> row;
-
             cout << "Please enter the column size for matrix #2: ";
             cin >> col;
 
             // create the second matrix using the row and the column values.
             cout << "\nInitializing Matrix #2..." << endl;
-            enterMatrix(matrix2, row, col);
+            // enterMatrix(matrix2, row, col); // uncomment this line to allow user input.
+            generateRandomMatrix(matrix2, row);
 
             // display the matrices before performing any operations.
             cout << "\nDisplaying Matrix #1: \n";

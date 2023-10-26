@@ -5,6 +5,10 @@
   "files.associations": {
     "iostream": "cpp",
     "__locale": "cpp",
-    "__string": "cpp"
+    "__string": "cpp",
+    "__config": "cpp",
+    "__nullptr": "cpp",
+    "new": "cpp",
+    "ios": "cpp"
   }
 }
