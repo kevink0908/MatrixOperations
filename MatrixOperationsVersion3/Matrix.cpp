@@ -14,7 +14,6 @@ private:
     int row;
     int col;
     float **matrix;
-
     // add appropriate member functions and overloaded operator functions to
     // the class for doing the matrix operations.
 public:
@@ -23,7 +22,7 @@ public:
     {
         setRow(0);
         setCol(0);
-        matrix = nullptr;
+        setMatrix(nullptr);
     } // end of default CTOR.
 
     // this is the parameterized constructor.
@@ -31,7 +30,11 @@ public:
     {
         setRow(row);
         setCol(col);
-        setMatrix(row, col);
+        matrix = new float *[row];
+        for (int i = 0; i < row; ++i)
+        {
+            matrix[i] = new float[col];
+        }
     } // end of parameterized CTOR.
 
     // this is the destructor.
@@ -43,26 +46,19 @@ public:
         }
         delete[] matrix;
 
-        setRow(0);
-        setCol(0);
-        matrix = nullptr;
     } // end of DTOR.
 
     // this is the overloaded opeartor function for addition.
-    Matrix operator+(Matrix const &obj)
+    Matrix operator+(const Matrix &obj) const
     {
-        Matrix result = Matrix(this->getRow(), this->getCol());
+        Matrix result(this->getRow(), this->getCol());
 
-        // allocate memory in the heap to store results.
-        result.matrix = (float **)malloc(getRow() * sizeof(float *));
-        for (int i = 0; i < result.getRow(); i++)
+        for (int i = 0; i < this->getRow(); i++)
         {
-            *(result.matrix + i) = (float *)malloc(result.getCol() * sizeof(float));
-
             // add corresponding elements of matrices.
-            for (int j = 0; j < result.getCol(); j++)
+            for (int j = 0; j < this->getCol(); j++)
             {
-                result.matrix[i][j] = this->getMatrix()[i][j] + obj.matrix[i][j];
+                result.getMatrix()[i][j] = this->getMatrix()[i][j] + obj.getMatrix()[i][j];
             }
         }
 
@@ -71,20 +67,16 @@ public:
     }
 
     // this is the overloaded opeartor function for subtraction.
-    Matrix operator-(Matrix const &obj)
+    Matrix operator-(const Matrix &obj) const
     {
-        Matrix result = Matrix(this->getRow(), this->getCol());
+        Matrix result(this->getRow(), this->getCol());
 
-        // allocate memory in the heap to store results.
-        result.matrix = (float **)malloc(getRow() * sizeof(float *));
-        for (int i = 0; i < result.getRow(); i++)
+        for (int i = 0; i < this->getRow(); i++)
         {
-            *(result.matrix + i) = (float *)malloc(result.getCol() * sizeof(float));
-
-            // subtract corresponding elements of matrices.
-            for (int j = 0; j < result.getCol(); j++)
+            // add corresponding elements of matrices.
+            for (int j = 0; j < this->getCol(); j++)
             {
-                result.matrix[i][j] = this->getMatrix()[i][j] - obj.matrix[i][j];
+                result.getMatrix()[i][j] = this->getMatrix()[i][j] - obj.getMatrix()[i][j];
             }
         }
 
@@ -93,27 +85,23 @@ public:
     }
 
     // this is the overloaded opeartor function for multiplication.
-    Matrix operator*(Matrix const &obj)
+    Matrix operator*(const Matrix &obj) const
     {
-        Matrix result = Matrix(this->getRow(), obj.col);
+        Matrix result(this->getRow(), obj.getCol());
 
-        // allocate memory in the heap to store results.
-        result.matrix = (float **)malloc(getRow() * sizeof(float *));
-        for (int i = 0; i < result.getRow(); i++)
+        for (int i = 0; i < this->getRow(); i++)
         {
-            *(result.matrix + i) = (float *)malloc(result.getCol() * sizeof(float));
-
             // multiply corresponding elements of matrices.
-            for (int j = 0; j < result.getCol(); j++)
+            for (int j = 0; j < obj.getCol(); j++)
             {
                 // first, initialize the new matrix to 0.
                 result.getMatrix()[i][j] = 0;
 
-                for (int k = 0; k < obj.row; k++)
+                for (int k = 0; k < obj.getRow(); k++)
                 {
                     // then, start multiplying two matrices before
                     // storing the products in the new matrix.
-                    result.getMatrix()[i][j] += this->getMatrix()[i][k] * obj.matrix[k][j];
+                    result.getMatrix()[i][j] += this->getMatrix()[i][k] * obj.getMatrix()[k][j];
                 }
             }
         }
@@ -122,119 +110,151 @@ public:
         return result;
     }
 
-    // this method will print out the result of the operation after it is performed.
-    void printMatrix()
+    // this is the overloaded operator function for assignment.
+    Matrix &operator=(const Matrix &obj)
     {
-        for (int i = 0; i < getRow(); i++)
+        if (this != &obj)
         {
-            for (int j = 0; i < getCol(); j++)
+            // deallocate existing matrix.
+            for (int i = 0; i < getRow(); i++)
             {
-                cout << getMatrix()[i][j] << " ";
+                delete[] matrix[i];
             }
-            cout << endl;
-        }
-        cout << endl;
-    } // end of printMatrix().
+            delete[] matrix;
 
-    // this function will check whether addition or subtraction will be permissible
-    // on the two matrices entered by the user.
-    // NOTE: both addition and subtraction are permissible only if the two
-    // matrices have the same dimensions.
-    bool checkAdditionPermissibility(Matrix const &obj)
-    {
-        // check to see if both matrix1 and matrix 2 have the same dimensions.
-        if (this->getRow() != obj.row || this->getCol() != obj.col)
-        {
-            return false;
-        }
-
-        // return true if two matrices have the same dimensions.
-        return true;
-    } // end of checkAdditionPermissibility().
-
-    // this function will check whether multiplication will be permissible
-    // on the two matrices entered by the user.
-    // NOTE: matrix multiplication will be permissible only if the number of
-    // columns in the first matrix is equal to the number of rows in the
-    // second matrix.
-    bool checkMultiplicationPermissibility(Matrix const &obj)
-    {
-        // check to see if the number of columns in the first matrix is equal
-        // to the number of rows in the second matrix.
-        if (this->getCol() != obj.row)
-        {
-            return false;
-        }
-
-        // return true if two matrices have the same dimensions.
-        return true;
-    } // end of checkMultiplicationPermissibility().
-
-    void setRow(int r) { row = r; }
-    void setCol(int c) { col = c; }
-    void setMatrix(int r, int c)
-    {
-        float temp;
-
-        // allocate memory in the heap to store floating point values in matrix.
-        matrix = (float **)malloc(r * sizeof(float *));
-        for (int i = 0; i < r; i++)
-        {
-            *(matrix + i) = (float *)malloc(c * sizeof(float));
-
-            // then, prompt the user to enter the values for the matrix.
-            for (int j = 0; j < c; j++)
+            // Allocate new memory and copy values
+            setRow(obj.getRow());
+            setCol(obj.getCol());
+            matrix = new float *[getRow()];
+            for (int i = 0; i < getRow(); i++)
             {
-                cout << "Please enter a floating point value for Row #" << (i + 1)
-                     << " and Column #" << (j + 1) << ": ";
-                cin >> temp;
-
-                // verify that the input value is a floating point value.
-                if (temp == (float)temp)
+                matrix[i] = new float[getCol()];
+                for (int j = 0; j < getCol(); j++)
                 {
-                    getMatrix()[i][j] = temp;
+                    matrix[i][j] = obj.getMatrix()[i][j];
                 }
             }
         }
+        return *this;
     }
-    int getRow() { return row; }
-    int getCol() { return col; }
-    float **getMatrix() { return matrix; }
+
+    void setRow(int r) { row = r; }
+    void setCol(int c) { col = c; }
+    void setMatrix(float **ptr) { matrix = ptr; }
+    int getRow() const { return row; }
+    int getCol() const { return col; }
+    float **getMatrix() const { return matrix; }
 }; // end of Matrix class.
+
+// this method allows the user to enter the size and the elements for a matrix.
+void enterMatrix(Matrix &matrix, int row, int col)
+{
+    float temp;
+
+    matrix.setRow(row);
+    matrix.setCol(col);
+    matrix.setMatrix(new float *[row]);
+
+    for (int i = 0; i < row; i++)
+    {
+        matrix.getMatrix()[i] = new float[col];
+
+        for (int j = 0; j < col; j++)
+        {
+            cout << "Please enter a floating point value for Row #" << (i + 1)
+                 << " and Column #" << (j + 1) << ": ";
+            cin >> temp;
+
+            matrix.getMatrix()[i][j] = temp;
+        }
+    }
+}
+
+// this function generates a random matrix.
+float **generateRandomMatrix(int n)
+{
+    int random;
+    srand(time(0));
+    float **matrix = (float **)malloc(n * sizeof(float *));
+    float temp;
+
+    // fill up the matrix with random values.
+    for (int i = 0; i < n; i++)
+    {
+        *(matrix + i) = (float *)malloc(n * sizeof(float));
+
+        for (int j = 0; j < n; j++)
+        {
+            random = (rand() % 11) + 0;
+            matrix[i][j] = (float)random;
+        }
+    }
+
+    return matrix;
+}
+
+// this method will print out the result of the operation after it is performed.
+void printMatrix(Matrix &matrix)
+{
+    for (int i = 0; i < matrix.getRow(); i++)
+    {
+        for (int j = 0; j < matrix.getCol(); j++)
+        {
+            cout << matrix.getMatrix()[i][j] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+} // end of printMatrix().
+
+// this function will check whether addition or subtraction will be permissible
+// on the two matrices entered by the user.
+// NOTE: both addition and subtraction are permissible only if the two
+// matrices have the same dimensions.
+bool checkAdditionPermissibility(Matrix &matrix1, Matrix &matrix2)
+{
+    // check to see if both matrix1 and matrix 2 have the same dimensions.
+    if (matrix1.getRow() != matrix2.getRow() || matrix1.getCol() != matrix2.getCol())
+    {
+        return false;
+    }
+
+    // return true if two matrices have the same dimensions.
+    return true;
+} // end of checkAdditionPermissibility().
+
+// this function will check whether multiplication will be permissible
+// on the two matrices entered by the user.
+// NOTE: matrix multiplication will be permissible only if the number of
+// columns in the first matrix is equal to the number of rows in the
+// second matrix.
+bool checkMultiplicationPermissibility(Matrix &matrix1, Matrix &matrix2)
+{
+    // check to see if the number of columns in the first matrix is equal
+    // to the number of rows in the second matrix.
+    if (matrix1.getCol() != matrix2.getRow())
+    {
+        return false;
+    }
+
+    // return true if two matrices have the same dimensions.
+    return true;
+} // end of checkMultiplicationPermissibility().
 
 // this driver program tests three different operations with matrices.
 int main()
 {
     int userInput = 0, row, col;
-    Matrix result;
+    Matrix matrix1, matrix2, result;
 
     cout << "\nPlease enter the row size for matrix #1: ";
     cin >> row;
-    do
-    {
-        if (row % 1 == 0)
-        {
-            break;
-        }
-        cout << "ERROR: Invalid user input... Please enter an integer.\n";
-    } while (row % 1 != 0);
-
     cout << "Please enter the column size for matrix #1: ";
     cin >> col;
-    do
-    {
-        if (col % 1 == 0)
-        {
-            break;
-        }
-        cout << "ERROR: Invalid user input... Please enter an integer.\n";
-    } while (col % 1 != 0);
 
     // create the first matrix using the row and the column values.
     cout << "\nInitializing Matrix #1..." << endl;
-    Matrix matrix1(row, col);
-
-    matrix1.printMatrix();
+    enterMatrix(matrix1, row, col);
 
     cout << "\nPlease enter the row size for matrix #2: ";
     cin >> row;
@@ -244,13 +264,13 @@ int main()
 
     // create the second matrix using the row and the column values.
     cout << "\nInitializing Matrix #2..." << endl;
-    Matrix matrix2(row, col);
+    enterMatrix(matrix2, row, col);
 
     // display the matrices before performing any operations.
     cout << "\nDisplaying Matrix #1: \n";
-    matrix1.printMatrix();
+    printMatrix(matrix1);
     cout << "Matrix #2: \n";
-    matrix2.printMatrix();
+    printMatrix(matrix2);
 
     // then, present a menu that allows the user to
     // select the operation they want to test.
@@ -268,7 +288,7 @@ int main()
         {
         case 1:
             // check to see if addition is permissible on the two matrices.
-            if (!(matrix1.checkAdditionPermissibility(matrix2)))
+            if (!(checkAdditionPermissibility(matrix1, matrix2)))
             {
                 cout << "Error: addition is not permissible on the current matrices."
                      << " Please enter two new matrices to perform an addition.\n";
@@ -276,12 +296,11 @@ int main()
             }
             // perform addition on two matrices and print out the result.
             result = matrix1 + matrix2;
-            result.printMatrix();
-            result.~Matrix();
+            printMatrix(result);
             break;
         case 2:
             // check to see if subtraction is permissible on the two matrices.
-            if (!(matrix1.checkAdditionPermissibility(matrix2)))
+            if (!(checkAdditionPermissibility(matrix1, matrix2)))
             {
                 cout << "Error: subtraction is not permissible on the current matrices."
                      << " Please enter two new matrices to perform a subtraction.\n";
@@ -289,12 +308,11 @@ int main()
             }
             // perform subtraction on two matrices and print out the result.
             result = matrix1 - matrix2;
-            result.printMatrix();
-            result.~Matrix();
+            printMatrix(result);
             break;
         case 3:
             // check to see if multiplication is permissible on the two matrices.
-            if (!(matrix1.checkMultiplicationPermissibility(matrix2)))
+            if (!(checkMultiplicationPermissibility(matrix1, matrix2)))
             {
                 cout << "Error: multiplication is not permissible on the two matrices."
                      << " Please enter two new matrices to perform a multiplication.\n";
@@ -302,39 +320,37 @@ int main()
             }
             // perform multiplication on two matrices and print out the result.
             result = matrix1 * matrix2;
-            result.printMatrix();
-            result.~Matrix();
+            printMatrix(result);
             break;
         case 4:
-            // if the user wishes to select two new matrices, destory the current matrices.
-            matrix1.~Matrix();
-            matrix2.~Matrix();
-
             // provide the user an option to select two new matrices.
             cout << "\nPlease enter the row size for matrix #1: ";
             cin >> row;
-
-            cout << "\nPlease enter the column size for matrix #1: ";
+            cout << "Please enter the column size for matrix #1: ";
             cin >> col;
 
             // create the first matrix using the row and the column values.
-            matrix1 = Matrix(row, col);
+            cout << "\nInitializing Matrix #1..." << endl;
+            enterMatrix(matrix1, row, col);
 
-            cout << "Please enter the row size for matrix #2: \n";
+            cout << "\nPlease enter the row size for matrix #2: ";
             cin >> row;
 
-            cout << "Please enter the column size for matrix #2: \n";
+            cout << "Please enter the column size for matrix #2: ";
             cin >> col;
 
             // create the second matrix using the row and the column values.
-            matrix2 = Matrix(row, col);
+            cout << "\nInitializing Matrix #2..." << endl;
+            enterMatrix(matrix2, row, col);
+
+            // display the matrices before performing any operations.
+            cout << "\nDisplaying Matrix #1: \n";
+            printMatrix(matrix1);
+            cout << "Matrix #2: \n";
+            printMatrix(matrix2);
             break;
         case 5:
             cout << "Terminating the program... Good bye!\n";
-            // deallocate memory for the two matrices and then return.
-            matrix1.~Matrix();
-            matrix2.~Matrix();
-
             return 0;
         default:
             cout << "Please enter a number from 1 to 5.\n";
@@ -344,8 +360,5 @@ int main()
         // other operation unless they choose to exit the menu.
     } while (userInput != 5);
 
-    // deallocate memory for the two matrices and then return.
-    matrix1.~Matrix();
-    matrix2.~Matrix();
     return 0;
 } // end of main.
